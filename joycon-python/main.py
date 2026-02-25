@@ -90,6 +90,33 @@ def play_audio_on_joycon(joycon: AudioJoyCon, commands: list, fps: int = 66):
     stop_data = encode_joycon_rumble(0.0, 0.0, 0.0, 0.0)
     joycon.send_rumble_data(stop_data + stop_data)
 
+def play_audio_on_joycons(joycons: list, commands: list, fps: int = 66):
+    frame_duration = 1.0 / fps
+    
+    print(f"再生を開始します... (同期デバイス数: {len(joycons)}台)")
+    start_time = time.perf_counter() 
+
+    for i, cmd in enumerate(commands):
+        hf_f, hf_a, lf_f, lf_a = cmd
+        single_motor_data = encode_joycon_rumble(hf_f, hf_a, lf_f, lf_a)
+        full_data = single_motor_data + single_motor_data
+
+        # 接続されているすべてのJoy-Conに、タイムラグを最小限に抑えて連続送信
+        for jc in joycons:
+            jc.send_rumble_data(full_data)
+
+        # 次のフレームの開始予定時刻を計算
+        next_frame_time = start_time + (i + 1) * frame_duration
+        
+        # 予定時刻が来るまでビジーウェイト
+        while time.perf_counter() < next_frame_time:
+            pass
+
+    print("再生完了。すべての振動を停止します。")
+    stop_data = encode_joycon_rumble(0.0, 0.0, 0.0, 0.0)
+    for jc in joycons:
+        jc.send_rumble_data(stop_data + stop_data)
+
 if __name__ == '__main__':
     script_dir = Path(__file__).parent
     csv_path = script_dir / "beyond_commands.csv"
@@ -100,15 +127,28 @@ if __name__ == '__main__':
 
     audio_commands = load_commands_from_csv(str(csv_path))
 
-    ids = get_L_id() if None not in get_L_id() else get_R_id()
-    if None not in ids:
-        joycon = AudioJoyCon(*ids)
-        try:
-            # 高精度再生ループに突入
-            play_audio_on_joycon(joycon, audio_commands, fps=66)
-        except KeyboardInterrupt:
-            print("\nユーザーによって中断されました。振動を停止します。")
-            stop_data = encode_joycon_rumble(0.0, 0.0, 0.0, 0.0)
-            joycon.send_rumble_data(stop_data + stop_data)
-    else:
-        print("Joy-Conが見つかりません。")
+    # --- 論理的なデバイス検出と初期化 ---
+    active_joycons = []
+    
+    l_id = get_L_id()
+    if None not in l_id:
+        active_joycons.append(AudioJoyCon(*l_id))
+        print("左Joy-Con(L) の接続を確立しました。")
+        
+    r_id = get_R_id()
+    if None not in r_id:
+        active_joycons.append(AudioJoyCon(*r_id))
+        print("右Joy-Con(R) の接続を確立しました。")
+
+    if not active_joycons:
+        print("エラー: 制御可能なJoy-Conが見つかりません。Bluetoothのペアリング状態を確認してください。")
+        exit()
+
+    try:
+        # 検出されたすべてのJoy-Conをリストとして渡す
+        play_audio_on_joycons(active_joycons, audio_commands, fps=66)
+    except KeyboardInterrupt:
+        print("\nユーザーによって中断されました。すべての振動を強制停止します。")
+        stop_data = encode_joycon_rumble(0.0, 0.0, 0.0, 0.0)
+        for jc in active_joycons:
+            jc.send_rumble_data(stop_data + stop_data)
