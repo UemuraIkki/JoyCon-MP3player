@@ -11,7 +11,7 @@ from pyjoycon.device import get_L_id, get_R_id
 def encode_joycon_rumble(hf_freq: float, hf_amp: float, lf_freq: float, lf_amp: float) -> bytes:
     if hf_amp == 0.0 and lf_amp == 0.0:
         return b'\x00\x01\x40\x40'
-
+ 
     hf_freq = max(0.0, min(1252.0, hf_freq))
     lf_freq = max(0.0, min(1252.0, lf_freq))
     hf_amp  = max(0.0, min(1.0, hf_amp))
