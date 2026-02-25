@@ -1,0 +1,2 @@
+# JoyCon-MP3player
+JoyConのHD振動を用いて任意のmp3ファイルを鳴らす
