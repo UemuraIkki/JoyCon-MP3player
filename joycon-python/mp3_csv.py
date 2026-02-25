@@ -42,8 +42,8 @@ def analyze_audio_for_joycon_dsp(file_path: str, fps: int = 66) -> list:
         else:
             hf_freq, hf_amp = 0.0, 0.0
             
-        lf_amp = min(1.0, lf_amp / 80.0) 
-        hf_amp = min(1.0, hf_amp / 10.0)
+        lf_amp = min(1.0, lf_amp / 100.0) 
+        hf_amp = min(1.0, hf_amp / 5.0)
         if hf_amp > 0.3:
             lf_amp = lf_amp * 0.2
 

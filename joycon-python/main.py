@@ -92,13 +92,12 @@ def play_audio_on_joycon(joycon: AudioJoyCon, commands: list, fps: int = 66):
 
 if __name__ == '__main__':
     script_dir = Path(__file__).parent
-    csv_path = script_dir / "HJ_commands.csv"
+    csv_path = script_dir / "beyond_commands.csv"
 
     if not csv_path.exists():
         print(f"エラー: {csv_path} が見つかりません。")
         exit()
 
-    # CSVから楽譜データを読み込む（高速・低負荷）
     audio_commands = load_commands_from_csv(str(csv_path))
 
     ids = get_L_id() if None not in get_L_id() else get_R_id()
