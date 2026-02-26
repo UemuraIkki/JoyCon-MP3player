@@ -41,7 +41,7 @@ def create_skeleton_audio(input_path: str, output_path: str):
 
 if __name__ == '__main__':
     script_dir = Path(__file__).parent
-    mp3_name = "shunkan.mp3"
+    mp3_name = "hakujitu.mp3"
     input_path = script_dir / mp3_name
     
     # 出力ファイル名（_skeleton.wav）

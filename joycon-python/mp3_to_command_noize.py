@@ -150,7 +150,7 @@ def save_commands_to_csv(commands: list, output_path: str):
 # ==========================================
 if __name__ == '__main__':
     script_dir = Path(__file__).parent
-    mp3_name = "shunkan_skeleton.wav"
+    mp3_name = "hakujitu_skeleton.wav"
     mp3_path = script_dir / mp3_name
     csv_path = script_dir / f"{mp3_name.split('.')[0]}_commands.csv"
 

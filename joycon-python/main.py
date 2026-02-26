@@ -119,7 +119,7 @@ def play_audio_on_joycons(joycons: list, commands: list, fps: int = 66):
 
 if __name__ == '__main__':
     script_dir = Path(__file__).parent
-    csv_path = script_dir / "beyond_commands.csv"
+    csv_path = script_dir / "hakujitu_skeleton_commands.csv"
 
     if not csv_path.exists():
         print(f"エラー: {csv_path} が見つかりません。")
